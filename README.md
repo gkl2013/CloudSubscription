@@ -6,7 +6,7 @@
 镜像地址：[docker.cnb.cool/cloud115/cloudsubbot](docker.cnb.cool/cloud115/cloudsubbot)
 
 ```
-docker pull docker.cnb.cool/cloud115/cloudsubbot:1.0.2
+docker pull docker.cnb.cool/cloud115/cloudsubbot:1.0.5
 ```
 
 运行：
