@@ -18,7 +18,7 @@ docker run -v /database/sqlite.db:/database/sqlite.db -d -p 9114:9114 镜像ID
 
 ### 配置大模型key
 
-申请![智谱清言](https://bigmodel.cn/usercenter/proj-mgmt/apikeys)大模型KEY，采用其GLM-4.5-Flash免费大模型。
+申请[智谱清言](https://bigmodel.cn/usercenter/proj-mgmt/apikeys)大模型KEY，采用其GLM-4.5-Flash免费大模型。
 
 ### 配置115网盘配置
 
