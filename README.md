@@ -14,6 +14,23 @@ docker pull docker.cnb.cool/cloud115/cloudsubbot:1.0.5
 docker run -v /database/sqlite.db:/database/sqlite.db -d -p 9114:9114 镜像ID
 ```
 
+docker-compose
+```
+services:
+  cloudsubbot:
+    image: docker.cnb.cool/cloud115/cloudsubbot:1.0.5
+    platform: linux/amd64
+    container_name: cloudsubbot
+    restart: unless-stopped
+    ports:
+      - "9114:9114"
+    environment:
+      - ENV=production
+      - DB_PATH=/database/sqlite.db
+    volumes:
+      - ./database/sqlite.db:/database/sqlite.db
+```
+
 ## 使用教程
 
 ### 配置大模型key
