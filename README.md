@@ -30,3 +30,5 @@ docker run -v /database/sqlite.db:/database/sqlite.db -d -p 9114:9114 镜像ID
 
 #### 根目录配置
 配置115网盘文件的cid
+
+## 复制账户UID, 联系博主添加白名单
