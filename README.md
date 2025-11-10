@@ -28,7 +28,7 @@ services:
       - ENV=production
       - DB_PATH=/database/sqlite.db
     volumes:
-      - ./database/sqlite.db:/database/sqlite.db
+      - ./database:/database
 ```
 
 ## 使用教程
