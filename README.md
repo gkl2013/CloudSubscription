@@ -11,7 +11,7 @@ docker pull docker.cnb.cool/cloud115/cloudsubbot:1.0.5
 
 运行：
 ```
-docker run -v /database/sqlite.db:/database/sqlite.db -d -p 9114:9114 镜像ID
+docker run -v /database:/database -d -p 9114:9114 镜像ID
 ```
 
 docker-compose
