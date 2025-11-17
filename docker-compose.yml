@@ -1,6 +1,6 @@
 services:
   cloudsubbot:
-    image: docker.cnb.cool/cloud115/cloudsubbot:1.0.5
+    image: docker.cnb.cool/cloud115/cloudsubbot:1.0.6
     platform: linux/amd64
     container_name: cloudsubbot
     restart: unless-stopped
