@@ -6,7 +6,7 @@
 镜像地址：[docker.cnb.cool/cloud115/cloudsubbot](docker.cnb.cool/cloud115/cloudsubbot)
 
 ```
-docker pull docker.cnb.cool/cloud115/cloudsubbot:1.0.5
+docker pull docker.cnb.cool/cloud115/cloudsubbot:1.0.6
 ```
 
 运行：
@@ -18,7 +18,7 @@ docker-compose
 ```
 services:
   cloudsubbot:
-    image: docker.cnb.cool/cloud115/cloudsubbot:1.0.5
+    image: docker.cnb.cool/cloud115/cloudsubbot:1.0.6
     platform: linux/amd64
     container_name: cloudsubbot
     restart: unless-stopped
