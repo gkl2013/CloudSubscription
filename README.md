@@ -3,7 +3,7 @@
 
 ## 镜像
 
-镜像地址：[docker.cnb.cool/cloud115/cloudsubbot](docker.cnb.cool/cloud115/cloudsubbot)
+最新镜像版本地址：[https://cnb.cool/cloud115/cloudsubbot/-/packages/docker/cloudsubbot](https://cnb.cool/cloud115/cloudsubbot/-/packages/docker/cloudsubbot)
 
 ```
 docker pull docker.cnb.cool/cloud115/cloudsubbot:1.0.6
