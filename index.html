@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>115网盘自动订阅工具 - CloudSubBot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+            font-weight: 400;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        /* 顶部导航栏 */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 122, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px 0;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #007aff;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            margin-right: 32px;
+        }
+
+        .nav-item a {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            position: relative;
+        }
+
+        .nav-item a:hover {
+            color: #007aff;
+        }
+
+        .nav-item a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #007aff;
+            transition: width 0.3s ease;
+        }
+
+        .nav-item a:hover::after {
+            width: 100%;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-download {
+            background: #007aff;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 24px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-download:hover {
+            background: #0056d3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            background: transparent;
+            border-radius: 0;
+            border: none;
+            overflow: visible;
+        }
+
+        /* 英雄区域 */
+        .hero {
+            background: linear-gradient(135deg, #007aff 0%, #00c6ff 100%);
+            color: white;
+            padding: 80px 24px;
+            text-align: center;
+            margin-bottom: 0;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #007aff;
+            padding: 16px 32px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 122, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* 功能区域 */
+        .section {
+            padding: 80px 24px;
+            background: white;
+            margin-bottom: 2px;
+        }
+
+        .section:nth-child(even) {
+            background: #f8fafe;
+        }
+
+        .section-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+        }
+
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 32px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 40px 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 122, 255, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 122, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #007aff, #00c6ff);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 122, 255, 0.15);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #007aff, #00c6ff);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            font-size: 1.5rem;
+        }
+
+        .feature-card h4 {
+            color: #333;
+            margin-bottom: 16px;
+            font-size: 1.375rem;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        /* 安装方法区域 */
+        .install-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 40px;
+        }
+
+        .install-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 6px 30px rgba(0, 122, 255, 0.1);
+            border: 1px solid rgba(0, 122, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .install-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #007aff, #00c6ff);
+        }
+
+        .install-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .install-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #007aff, #00c6ff);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .install-card h4 {
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .install-card p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: #1a1d29;
+            color: #e1e5e9;
+            padding: 24px;
+            border-radius: 12px;
+            font-family: 'SF Mono', 'Monaco', 'JetBrains Mono', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 20px 0;
+            position: relative;
+            border: 1px solid #2d3748;
+            line-height: 1.5;
+        }
+
+        .code-block::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 12px;
+            right: 20px;
+            font-size: 11px;
+            color: #007aff;
+            text-transform: uppercase;
+            font-weight: 600;
+            background: rgba(0, 122, 255, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .code-copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 80px;
+            background: rgba(0, 122, 255, 0.1);
+            color: #007aff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .code-copy-btn:hover {
+            background: rgba(0, 122, 255, 0.2);
+        }
+
+        /* 使用步骤区域 */
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+        }
+
+        .step-card {
+            background: white;
+            padding: 36px;
+            border-radius: 20px;
+            box-shadow: 0 6px 30px rgba(0, 122, 255, 0.08);
+            border: 1px solid rgba(0, 122, 255, 0.1);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 122, 255, 0.15);
+        }
+
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 36px;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #007aff, #00c6ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .step-card h4 {
+            color: #333;
+            margin-bottom: 16px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .step-card p {
+            color: #666;
+            line-height: 1.7;
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+
+        .step-card strong {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .step-card a {
+            color: #007aff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .step-card a:hover {
+            color: #0056d3;
+            text-decoration: underline;
+        }
+
+        .step-card code {
+            background: rgba(0, 122, 255, 0.1);
+            color: #007aff;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* 截图展示区域 */
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 40px;
+        }
+
+        .screenshot-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 40px rgba(0, 122, 255, 0.1);
+            border: 1px solid rgba(0, 122, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .screenshot-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 60px rgba(0, 122, 255, 0.15);
+        }
+
+        .screenshot-header {
+            padding: 24px 32px;
+            background: linear-gradient(135deg, #007aff, #00c6ff);
+            color: white;
+            position: relative;
+        }
+
+        .screenshot-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .screenshot-header h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .screenshot-header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .screenshot-content {
+            position: relative;
+            min-height: 300px;
+            background: #f8fafe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screenshot-content img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .screenshot-placeholder {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 40px;
+            color: #666;
+        }
+
+        .screenshot-placeholder .placeholder-icon {
+            font-size: 3rem;
+            margin-bottom: 24px;
+            opacity: 0.6;
+            color: #007aff;
+        }
+
+        .screenshot-placeholder p {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .screenshot-placeholder small {
+            background: rgba(0, 122, 255, 0.1);
+            color: #007aff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-family: 'SF Mono', monospace;
+            font-weight: 500;
+        }
+
+        /* 视频演示区域 */
+        .video-main {
+            margin-bottom: 50px;
+        }
+
+        .video-main-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 12px 50px rgba(0, 122, 255, 0.12);
+            border: 1px solid rgba(0, 122, 255, 0.1);
+        }
+
+        .video-main-header {
+            padding: 32px 40px;
+            background: linear-gradient(135deg, #007aff, #00c6ff);
+            color: white;
+            text-align: center;
+        }
+
+        .video-main-header h4 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .video-main-header p {
+            opacity: 0.9;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .video-main-content {
+            position: relative;
+            background: #000;
+            min-height: 450px;
+        }
+
+        .video-main-content video {
+            width: 100%;
+            height: auto;
+            max-height: 600px;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 32px;
+        }
+
+        .video-small-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 6px 30px rgba(0, 122, 255, 0.08);
+            border: 1px solid rgba(0, 122, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .video-small-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 122, 255, 0.15);
+        }
+
+        .video-small-header {
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #007aff, #00c6ff);
+            color: white;
+        }
+
+        .video-small-header h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .video-small-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .video-small-content {
+            position: relative;
+            background: #000;
+            height: 200px;
+        }
+
+        .video-small-content video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafe;
+            color: #666;
+            text-align: center;
+        }
+
+        .video-placeholder .placeholder-icon {
+            font-size: 3.5rem;
+            margin-bottom: 24px;
+            opacity: 0.6;
+            color: #007aff;
+        }
+
+        .video-placeholder p {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .video-placeholder small {
+            background: rgba(0, 122, 255, 0.1);
+            color: #007aff;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin: 3px;
+            display: inline-block;
+            font-family: 'SF Mono', monospace;
+            font-weight: 500;
+        }
+
+        /* 版本信息和底部 */
+        .version-section {
+            background: linear-gradient(135deg, #007aff, #00c6ff);
+            color: white;
+            padding: 60px 24px;
+            text-align: center;
+            margin-top: 2px;
+        }
+
+        .version-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .version-section h3 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 32px;
+        }
+
+        .version-badges {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .version-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .download-section {
+            margin-top: 32px;
+        }
+
+        .btn-download {
+            background: white;
+            color: #007aff;
+            padding: 16px 32px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+        }
+
+        .footer {
+            background: #1a1d29;
+            color: #8892b0;
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .footer p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .footer p:first-child {
+            color: #ccd6f6;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .version-info {
+            background: #0f172a;
+            color: white;
+            padding: 48px;
+            text-align: center;
+            border-top: 1px solid #1e293b;
+        }
+
+        .version-info h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.1);
+            color: #cbd5e1;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            margin: 8px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .footer {
+            text-align: center;
+            color: #64748b;
+            margin-top: 64px;
+            padding: 32px;
+        }
+
+        .footer p {
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            margin: 12px;
+            font-size: 0.95rem;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #64748b;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-left {
+                flex: 1;
+            }
+
+            .nav-logo {
+                font-size: 1.3rem;
+                margin-right: 0;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .nav-download {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+                border-radius: 20px;
+            }
+        }
+
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .nav-logo {
+                margin-right: 32px;
+            }
+
+            .nav-menu {
+                gap: 24px;
+            }
+        }
+
+            .hero {
+                padding: 60px 20px;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                max-width: 280px;
+                text-align: center;
+            }
+
+            .section {
+                padding: 60px 20px;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .install-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .install-card {
+                padding: 32px 24px;
+            }
+
+            .steps-container {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .step-card {
+                padding: 28px 24px;
+            }
+
+            .step-number {
+                left: 24px;
+            }
+
+            .screenshots-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .screenshot-content {
+                min-height: 250px;
+            }
+
+            .video-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .video-main-content {
+                min-height: 300px;
+            }
+
+            .video-small-content {
+                height: 180px;
+            }
+
+            .version-badges {
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .version-badge {
+                width: 100%;
+                max-width: 200px;
+                text-align: center;
+            }
+
+            .footer {
+                padding: 32px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.75rem;
+            }
+
+            .feature-card, .install-card, .step-card {
+                padding: 24px 20px;
+            }
+
+            .screenshot-header, .video-main-header, .video-small-header {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="nav-left">
+                <a href="#" class="nav-logo">CloudSubBot</a>
+            </div>
+            <div class="nav-right">
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="#features">功能特性</a></li>
+                    <li class="nav-item"><a href="#installation">快速开始</a></li>
+                    <li class="nav-item"><a href="#usage">使用指南</a></li>
+                    <li class="nav-item"><a href="#screenshots">操作截图</a></li>
+                    <li class="nav-item"><a href="#videos">视频演示</a></li>
+                </ul>
+                <a href="https://cnb.cool/cloud115/cloudsubbot/-/packages/docker/cloudsubbot" class="nav-download" target="_blank">立即下载</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <!-- 英雄区域 -->
+        <div class="hero">
+            <div class="hero-content">
+                <h1>CloudSubBot</h1>
+                <p>115网盘自动订阅工具，基于Docker容器化部署，支持AI智能分析，让您的网盘资源管理更加高效便捷</p>
+                <div class="hero-buttons">
+                    <a href="#installation" class="btn-primary">立即开始</a>
+                    <a href="#videos" class="btn-secondary">观看演示</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能特性 -->
+        <section id="features" class="section">
+            <div class="section-content">
+                <div class="section-header">
+                    <h2 class="section-title">核心特性</h2>
+                    <p class="section-subtitle">强大的功能，简单的操作，为您提供最佳的网盘管理体验</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <h4>AI智能分析</h4>
+                        <p>集成智谱清言GLM-4.5-Flash免费大模型，智能分析和处理订阅内容，提供更精准的资源推荐</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📁</div>
+                        <h4>115网盘集成</h4>
+                        <p>完美支持115网盘API，支持文件转存、分享链接处理，让网盘操作更加便捷</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🐳</div>
+                        <h4>Docker部署</h4>
+                        <p>基于Docker容器化部署，支持跨平台运行，一键启动，配置简单，维护方便</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔄</div>
+                        <h4>自动订阅</h4>
+                        <p>支持自动化订阅管理，智能监控和处理订阅内容，解放双手，提升效率</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🛡️</div>
+                        <h4>安全可靠</h4>
+                        <p>采用白名单机制，确保使用安全；支持Cookie认证，保护用户隐私和数据安全</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💾</div>
+                        <h4>数据持久化</h4>
+                        <p>内置SQLite数据库，支持数据持久化存储，确保订阅数据不丢失</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 快速开始 -->
+        <section id="installation" class="section">
+            <div class="section-content">
+                <div class="section-header">
+                    <h2 class="section-title">快速开始</h2>
+                    <p class="section-subtitle">两种部署方式，轻松上手，几分钟内即可开始使用</p>
+                </div>
+                <div class="install-grid">
+                    <div class="install-card">
+                        <div class="install-header">
+                            <div class="install-icon">🐳</div>
+                            <h4>Docker 运行</h4>
+                        </div>
+                        <p>拉取最新镜像：</p>
+                        <div class="code-block" data-lang="bash">docker pull docker.cnb.cool/cloud115/cloudsubbot:1.0.6</div>
+                        <p>运行容器：</p>
+                        <div class="code-block" data-lang="bash">docker run -v /database:/database -d -p 9114:9114 docker.cnb.cool/cloud115/cloudsubbot:1.0.6</div>
+                    </div>
+                    
+                    <div class="install-card">
+                        <div class="install-header">
+                            <div class="install-icon">⚡</div>
+                            <h4>Docker Compose</h4>
+                        </div>
+                        <p>使用Docker Compose一键部署：</p>
+                        <div class="code-block" data-lang="yaml">services:
+  cloudsubbot:
+    image: docker.cnb.cool/cloud115/cloudsubbot:1.0.6
+    platform: linux/amd64
+    container_name: cloudsubbot
+    restart: unless-stopped
+    ports:
+      - "9114:9114"
+    environment:
+      - ENV=production
+      - DB_PATH=/database/sqlite.db
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./database:/database</div>
+                        <div class="code-block" data-lang="bash">docker-compose up -d</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 使用指南 -->
+        <section id="usage" class="section">
+            <div class="section-content">
+                <div class="section-header">
+                    <h2 class="section-title">使用指南</h2>
+                    <p class="section-subtitle">简单四步，轻松配置，开启您的智能网盘管理之旅</p>
+                </div>
+                <div class="steps-container">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h4>配置大模型KEY</h4>
+                        <p>申请<a href="https://bigmodel.cn/usercenter/proj-mgmt/apikeys" target="_blank">智谱清言</a>大模型KEY，使用GLM-4.5-Flash免费大模型进行AI智能分析。</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h4>配置115网盘</h4>
+                        <p><strong>授权配置：</strong>配置调用Open API权限，通过115app扫描二维码进行授权</p>
+                        <p><strong>Cookie配置：</strong>配置115网盘Cookie，用于转存分享链接功能</p>
+                        <p><strong>根目录配置：</strong>设置115网盘文件的CID作为根目录</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h4>添加白名单</h4>
+                        <p>复制账户UID，联系博主添加白名单，确保系统安全使用。</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <h4>开始使用</h4>
+                        <p>配置完成后，访问 <code>http://localhost:9114</code> 开始使用CloudSubBot进行智能网盘订阅管理。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 操作截图 -->
+        <section id="screenshots" class="section">
+            <div class="section-content">
+                <div class="section-header">
+                    <h2 class="section-title">操作截图</h2>
+                    <p class="section-subtitle">直观展示每个配置步骤，让您快速上手</p>
+                </div>
+                <div class="screenshots-grid">
+                    <div class="screenshot-card">
+                        <div class="screenshot-header">
+                            <h4>配置大模型KEY</h4>
+                            <p>在系统设置中配置智谱清言API密钥</p>
+                        </div>
+                        <div class="screenshot-content">
+                            <img src="screenshots/ai-config.png" alt="配置大模型KEY截图" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="screenshot-placeholder">
+                                <div class="placeholder-icon">⚙️</div>
+                                <p>AI配置界面截图</p>
+                                <small>screenshots/ai-config.png</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="screenshot-card">
+                        <div class="screenshot-header">
+                            <h4>115网盘授权</h4>
+                            <p>扫描二维码完成115网盘API授权</p>
+                        </div>
+                        <div class="screenshot-content">
+                            <img src="screenshots/115-auth.png" alt="115网盘授权截图" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="screenshot-placeholder">
+                                <div class="placeholder-icon">📱</div>
+                                <p>115网盘授权界面</p>
+                                <small>screenshots/115-auth.png</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="screenshot-card">
+                        <div class="screenshot-header">
+                            <h4>Cookie配置</h4>
+                            <p>配置115网盘Cookie用于文件转存</p>
+                        </div>
+                        <div class="screenshot-content">
+                            <img src="screenshots/cookie-config.png" alt="Cookie配置截图" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="screenshot-placeholder">
+                                <div class="placeholder-icon">🍪</div>
+                                <p>Cookie配置界面</p>
+                                <small>screenshots/cookie-config.png</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="screenshot-card">
+                        <div class="screenshot-header">
+                            <h4>根目录设置</h4>
+                            <p>设置115网盘文件存储的根目录CID</p>
+                        </div>
+                        <div class="screenshot-content">
+                            <img src="screenshots/root-dir.png" alt="根目录设置截图" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="screenshot-placeholder">
+                                <div class="placeholder-icon">📁</div>
+                                <p>根目录配置界面</p>
+                                <small>screenshots/root-dir.png</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="screenshot-card">
+                        <div class="screenshot-header">
+                            <h4>主界面展示</h4>
+                            <p>CloudSubBot主界面和订阅管理功能</p>
+                        </div>
+                        <div class="screenshot-content">
+                            <img src="screenshots/main-interface.png" alt="主界面截图" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="screenshot-placeholder">
+                                <div class="placeholder-icon">💻</div>
+                                <p>主界面展示</p>
+                                <small>screenshots/main-interface.png</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="screenshot-card">
+                        <div class="screenshot-header">
+                            <h4>AI分析功能</h4>
+                            <p>智能分析订阅内容和资源推荐</p>
+                        </div>
+                        <div class="screenshot-content">
+                            <img src="screenshots/ai-analysis.png" alt="AI分析功能截图" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="screenshot-placeholder">
+                                <div class="placeholder-icon">🤖</div>
+                                <p>AI分析功能界面</p>
+                                <small>screenshots/ai-analysis.png</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 视频演示 -->
+        <section id="videos" class="section">
+            <div class="section-content">
+                <div class="section-header">
+                    <h2 class="section-title">视频演示</h2>
+                    <p class="section-subtitle">通过视频了解CloudSubBot的完整功能和使用方法</p>
+                </div>
+                
+                <!-- 主要演示视频 -->
+                <div class="video-main">
+                    <div class="video-main-card">
+                        <div class="video-main-header">
+                            <h4>完整功能演示</h4>
+                            <p>从安装部署到配置使用的完整流程演示</p>
+                        </div>
+                        <div class="video-main-content">
+                            <video controls poster="videos/demo-thumbnail.jpg" preload="metadata">
+                                <source src="videos/complete-demo.mp4" type="video/mp4">
+                                <source src="videos/complete-demo.webm" type="video/webm">
+                                您的浏览器不支持视频播放。
+                            </video>
+                            <div class="video-placeholder">
+                                <div class="placeholder-icon">▶️</div>
+                                <p>完整功能演示视频</p>
+                                <small>videos/complete-demo.mp4</small>
+                                <small>videos/demo-thumbnail.jpg</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 辅助视频网格 -->
+                <div class="video-grid">
+                    <div class="video-small-card">
+                        <div class="video-small-header">
+                            <h5>快速开始</h5>
+                            <p>3分钟快速部署指南</p>
+                        </div>
+                        <div class="video-small-content">
+                            <video controls poster="videos/quick-start-thumb.jpg" preload="metadata">
+                                <source src="videos/quick-start.mp4" type="video/mp4">
+                                您的浏览器不支持视频播放。
+                            </video>
+                            <div class="video-placeholder">
+                                <div class="placeholder-icon">⚡</div>
+                                <p>快速开始</p>
+                                <small>videos/quick-start.mp4</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="video-small-card">
+                        <div class="video-small-header">
+                            <h5>配置教程</h5>
+                            <p>详细配置步骤说明</p>
+                        </div>
+                        <div class="video-small-content">
+                            <video controls poster="videos/config-tutorial-thumb.jpg" preload="metadata">
+                                <source src="videos/config-tutorial.mp4" type="video/mp4">
+                                您的浏览器不支持视频播放。
+                            </video>
+                            <div class="video-placeholder">
+                                <div class="placeholder-icon">🔧</div>
+                                <p>配置教程</p>
+                                <small>videos/config-tutorial.mp4</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="video-small-card">
+                        <div class="video-small-header">
+                            <h5>高级功能</h5>
+                            <p>AI智能分析功能展示</p>
+                        </div>
+                        <div class="video-small-content">
+                            <video controls poster="videos/advanced-features-thumb.jpg" preload="metadata">
+                                <source src="videos/advanced-features.mp4" type="video/mp4">
+                                您的浏览器不支持视频播放。
+                            </video>
+                            <div class="video-placeholder">
+                                <div class="placeholder-icon">🚀</div>
+                                <p>高级功能</p>
+                                <small>videos/advanced-features.mp4</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 版本信息 -->
+        <div class="version-section">
+            <div class="version-content">
+                <h3>版本信息</h3>
+                <div class="version-badges">
+                    <div class="version-badge">当前版本: v1.0.6</div>
+                    <div class="version-badge">运行端口: 9114</div>
+                    <div class="version-badge">数据库: SQLite</div>
+                </div>
+                <div class="download-section">
+                    <a href="https://cnb.cool/cloud115/cloudsubbot/-/packages/docker/cloudsubbot" target="_blank" class="btn-download">
+                        查看镜像仓库
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2024 CloudSubBot</p>
+            <p>基于Docker容器化部署 | 支持115网盘 | AI智能分析</p>
+        </div>
+    </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 平滑滚动导航
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        const navHeight = document.querySelector('.navbar').offsetHeight;
+                        const targetPosition = target.offsetTop - navHeight - 20;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // 代码块复制功能
+            const codeBlocks = document.querySelectorAll('.code-block');
+            codeBlocks.forEach(block => {
+                // 添加复制按钮
+                const copyBtn = document.createElement('button');
+                copyBtn.innerHTML = '复制';
+                copyBtn.className = 'code-copy-btn';
+                copyBtn.style.display = 'none';
+                block.appendChild(copyBtn);
+
+                // 鼠标悬停显示复制按钮
+                block.addEventListener('mouseenter', () => {
+                    copyBtn.style.display = 'block';
+                });
+                
+                block.addEventListener('mouseleave', () => {
+                    copyBtn.style.display = 'none';
+                });
+
+                // 点击复制
+                copyBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const text = block.textContent.replace('复制', '').trim();
+                    navigator.clipboard.writeText(text).then(() => {
+                        copyBtn.innerHTML = '已复制！';
+                        copyBtn.style.background = 'rgba(76, 175, 80, 0.2)';
+                        copyBtn.style.color = '#4CAF50';
+                        setTimeout(() => {
+                            copyBtn.innerHTML = '复制';
+                            copyBtn.style.background = 'rgba(0, 122, 255, 0.1)';
+                            copyBtn.style.color = '#007aff';
+                        }, 2000);
+                    });
+                });
+            });
+
+            // 导航栏滚动效果
+            let lastScrollTop = 0;
+            const navbar = document.querySelector('.navbar');
+            
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                if (scrollTop > 100) {
+                    navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+                    navbar.style.boxShadow = '0 2px 20px rgba(0, 122, 255, 0.1)';
+                } else {
+                    navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+                    navbar.style.boxShadow = 'none';
+                }
+                
+                lastScrollTop = scrollTop;
+            });
+
+            // 视频懒加载
+            const videos = document.querySelectorAll('video');
+            const videoObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const video = entry.target;
+                        video.load();
+                        videoObserver.unobserve(video);
+                    }
+                });
+            });
+
+            videos.forEach(video => {
+                videoObserver.observe(video);
+            });
+
+            // 图片懒加载
+            const images = document.querySelectorAll('img[src*="screenshots/"]');
+            const imageObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        imageObserver.unobserve(img);
+                    }
+                });
+            });
+
+            images.forEach(img => {
+                imageObserver.observe(img);
+            });
+
+            // 添加页面加载动画
+            const animateOnScroll = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.feature-card, .install-card, .step-card, .screenshot-card, .video-small-card').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                animateOnScroll.observe(el);
+            });
+        });
+
+        // CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

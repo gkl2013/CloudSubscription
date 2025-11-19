@@ -1,0 +1,18 @@
+.DS_Store
+.vscode
+/node_modules/
+/env/env.json
+/env/env.js
+/env/qcloud.js
+test.js
+test.mjs
+.idea
+yarn*
+/publish/static/
+/publish/
+/public/
+/public-oversea/
+/andon-modules/
+# feflow的debug日志
+debug.log
+.codebuddy
